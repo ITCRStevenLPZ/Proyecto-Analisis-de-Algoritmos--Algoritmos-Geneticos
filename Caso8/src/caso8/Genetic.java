@@ -4,7 +4,7 @@ public class Genetic implements Constantes {
 
     public static int reproducir(int pParent1, int pParent2) {
         int result = pParent1;
-        int puntoCruce = (NIBBLE / 2 - 2) + (int) (Math.random() * ((NIBBLE / 2 - 2) - NIBBLE / 2 + 2));
+        int puntoCruce = (NIBBLE / 2);
 
         int mask = (GENOMA - 1) << NIBBLE - puntoCruce;
         result = pParent1 & mask;

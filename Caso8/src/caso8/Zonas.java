@@ -106,31 +106,31 @@ public class Zonas implements Constantes {
         return result;
     }
 
-    public boolean produceGenerations(int pGenerations) {
-        ArrayList<Integer> fitCromosomas = new ArrayList<>();
-        ArrayList<Integer> newPopulation = new ArrayList<>();
+    public boolean produceGenerations(int pGenerations) {//funcion que realiza el algoritmo genetico, devuelve true si ya se logro una poblacion acertada a la target. Recibe como parametro la cantidad de generaciones
+        ArrayList<Integer> fitCromosomas = new ArrayList<>();//arraylist encargada de contener todos los cromosomas que mediante la funcion Fitness son filtrados
+        ArrayList<Integer> newPopulation = new ArrayList<>();//es la nueva poblacion de individuos, esta en constante cambio
         boolean result = false;
-        for (int cuentaGeneraciones = 0; cuentaGeneraciones < pGenerations; cuentaGeneraciones++) {
-            for (int cromosoma : population) {
+        for (int cuentaGeneraciones = 0; cuentaGeneraciones < pGenerations; cuentaGeneraciones++) {//for que limita la cantidad de generaciones
+            for (int cromosoma : population) {//por cada cromosoma de la poblacion se evalua este en la funcion fitness
                 double fitvalue = fitness(cromosoma);
-                if (fitvalue > 1.0) {
+                if (fitvalue > 1.0) {//si el valor de fitness del cromosoma es mayor a 1.0 quiere decir que el cromosoma es apto para la reproduccion
                     fitCromosomas.add(cromosoma);
                 }
             }
 
             muestrasActual = new ArrayList<>();
-            for (int cuentaHijos = 0; cuentaHijos < MAX_AMOUNT_INDIVIDUALS; cuentaHijos++) {
-                int parent1 = fitCromosomas.get((int) (Math.random() * fitCromosomas.size()));
-                int parent2 = fitCromosomas.get((int) (Math.random() * fitCromosomas.size()));
-                int hijo = Genetic.mutate(Genetic.reproducir(parent1, parent2));
+            for (int cuentaHijos = 0; cuentaHijos < MAX_AMOUNT_INDIVIDUALS; cuentaHijos++) {//mediante la constante se establece la cantidad maxima de individuos a reproducir
+                int parent1 = fitCromosomas.get((int) (Math.random() * fitCromosomas.size()));//padre 1 buscado de forma random
+                int parent2 = fitCromosomas.get((int) (Math.random() * fitCromosomas.size()));//padre 2 buscado de forma random
+                int hijo = Genetic.mutate(Genetic.reproducir(parent1, parent2)); //hijo generado por los padres anteriores
                 newPopulation.add(hijo);
                 muestrasActual.add(new Muestra(getColor(hijo)));
             }
             population = newPopulation;
 
-            summaryActual = new ArrayList<>();
+            summaryActual = new ArrayList<>();//ArrayList que sirve como comparacion para elmetodo sumarizar, encargado de reorganizar los colores y darle su cantidad y probabilidad
             Sumarizar(muestrasActual, summaryActual);
-            result = compare(summaryActual, SummaryTarget);
+            result = compare(summaryActual, SummaryTarget);//comparara la lista summaryActual con la Target, si estas coinciden quiere decir que el algoritmo genetico termino su trabajo
             if (result) {
                 break;
             }
@@ -142,7 +142,7 @@ public class Zonas implements Constantes {
         return 1.0;
     }
 
-    public boolean compare(ArrayList<Muestra> pActual, ArrayList<Muestra> pTarget) {
+    public boolean compare(ArrayList<Muestra> pActual, ArrayList<Muestra> pTarget) {//funcion encargada de comparar y comparar si los colores coinciden y terminar la reproduccion de cromosomas
         boolean result = true;
         for (Muestra actual : pActual) {
             for (Muestra target : pTarget) {
@@ -154,10 +154,10 @@ public class Zonas implements Constantes {
         return result;
     }
 
-    public void generarPoblacion() {
+    public void generarPoblacion() {//Funcion encargada de realizar la poblacion inicial clave para el algoritmo genetico
         population = new ArrayList<>();
         for (int cant = 0; cant > POBLACION_INICIAL; cant++) {
-            population.add((int) Math.random() * GENOMA);
+            population.add((int) (Math.random() * GENOMA));
         }
     }
 

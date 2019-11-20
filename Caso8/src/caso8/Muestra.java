@@ -15,10 +15,6 @@ public class Muestra {
         return porcentaje;
     }
 
-    public void setPorcentaje(double porcentaje) {
-        this.porcentaje = porcentaje;
-    }
-
     public Muestra(Color color) {
         this.color = color;
     }
@@ -63,4 +59,7 @@ public class Muestra {
         this.Final_Value = Final_Value;
     }
 
+    public void setPorcentage(double porcentaje) {
+        this.porcentaje = porcentaje;
+    }
 }

@@ -18,39 +18,40 @@ public class Imagen implements Constantes {
         CrearZonas();
     }
 
-    public void CrearZonas() {
+    public void CrearZonas() { //encargadas de dividir la imagen en zonas para poder trabajar de forma individual con el fin de obtener resultados mas precisos
 
         for (int column = 0; column < COLUMNS; column++) {
             for (int row = 0; row < COLUMNS; row++) {
-                int x0 = ZONE_SIZE * column;
-                int y0 = ZONE_SIZE * row;
-                int x1 = ZONE_SIZE * column + ZONE_SIZE-1;
-                int y1 = ZONE_SIZE * row + ZONE_SIZE-1; 
+                int x0 = ZONE_SIZE * column; //coordenada que indica la esquina superior derecha del cuadrante
+                int y0 = ZONE_SIZE * row; //coordenada que indica la esquina inferior derecha del cuadrante
+                int x1 = ZONE_SIZE * column + ZONE_SIZE-1; //coordenada que indica la esquina superior izquierda del cuadrante
+                int y1 = ZONE_SIZE * row + ZONE_SIZE-1; //coordenada que indica la esquina inferior izquierda del cuadrante
                 Zonas nueva = new Zonas(x0, y0, x1, y1);
-                nueva.SetID(column, row); 
-                zonas.add(nueva);
-                for (int i = 0; i < TANTEOS; i++) {            
+                nueva.SetID(column, row); //la id se genera mediante la suma de la columna y la fila multiplicado por la constante COLUMNS
+                zonas.add(nueva);//se anade a la ArrayList zonas
+                for (int i = 0; i < TANTEOS; i++) {   //mediante este for se realizara la busqueda de color o de blancos         
                     boolean esBlanco = false;
-                    if (Math.random() <= nueva.probabilidad) {
-                        for (int j = 0; j < AMOUNT_OF_COLORS; j++) {
-                            int x = (int) (Math.random() * (nueva.max_x - nueva.min_x) + 1) + nueva.min_x;
-                            int y = (int) (Math.random() * (nueva.max_y - nueva.min_y) + 1) + nueva.min_y;
-                             
-                            Color c = new Color(img.getRGB(x, y));//Obtiene el rgb de cada punto
-                            if (c.getRed() >= 240 && c.getGreen() >= 240 && c.getBlue() >= 240) {
-                                //System.out.println("Probabilidad = " +nueva.probabilidad+  "\n");
+                    if (Math.random() <= nueva.probabilidad) {//Math.random genera un numero random entre 0 y 1 y lo compara con la probabilidad de la nueva zona anteriormente creada
+                        for (int j = 0; j < AMOUNT_OF_COLORS; j++) {//El for indica la cantidad de colores que seran tanteados
+                            int x = (int) (Math.random() * (nueva.max_x - nueva.min_x) + 1) + nueva.min_x; //se genera un random con rango, que va desde el min_x y el max_x
+                            int y = (int) (Math.random() * (nueva.max_y - nueva.min_y) + 1) + nueva.min_y;//se genera un random con rango, que va desde el min_y y el max_y                            
+                            Color c = new Color(img.getRGB(x, y));//Obtiene el rgb de cada punto con las coordenadas x , y generadas anteriormente
+                            //System.out.println("Probabilidad = " +nueva.probabilidad+" ID "+nueva.iD+"\n");
+                            if (c.getRed() >= 240 && c.getGreen() >= 240 && c.getBlue() >= 240) { //este if me indica que si el color tiende mucho a blanco se active un booleano o se ponga en true                               
                                 esBlanco = true;
                             } else {
-                                nueva.AddMuestra(c);
+                                nueva.AddMuestra(c);//si este no es blanco, simplemente es anadido al ArrayList MuestrasReales de la zona
                             }
                         }
                         if (esBlanco) {
-                            nueva.Decrease();
+                            nueva.Decrease();//si detecta que hubo colores blancos, mediante el booleano esBlanco se decrementa la probabilidad de la Zona, generando el algoritmo probabilista
                         }
                     }
 
-                }nueva.Sumarizar();
+                }System.out.println("Cant colores = " + nueva.total_colores + " Probabilidad " +nueva.probabilidad+" ID "+nueva.iD+"\n");
+                nueva.Sumarizar();
             }
         }
     }
+    
 }

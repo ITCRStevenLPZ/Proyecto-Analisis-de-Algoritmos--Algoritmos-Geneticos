@@ -80,19 +80,20 @@ public class Zonas implements Constantes {
         }
 
         int valueInicial = 0;//sirve para establecer los limites del genoma
-        Muestra ultimaMuestra=null;
+        Muestra ultimaMuestra = null;
         for (Muestra muestra : pSummary) {
-            muestra.setPorcentage((double) ((muestra.getCantidad()*100) / this.total_colores));//saca el porcentaje de este color en la zona mediante la cantidad de estos en la zona
-            System.out.println("Porcentaje = " +muestra.getPorcentaje()+"\n");
+            muestra.setPorcentage((double) ((muestra.getCantidad() * 100) / this.total_colores));//saca el porcentaje de este color en la zona mediante la cantidad de estos en la zona
+            System.out.println("Porcentaje = " + muestra.getPorcentaje() + "\n");
             muestra.setStart_Value(valueInicial);//establece el limite inferior del genoma
-            muestra.setFinal_Value(valueInicial + (int) (muestra.getPorcentaje() * GENOMA)/100);//mediante un calculo entre el genoma y el porcentaje de la zona se saca el valor del genoma
-            System.out.println("Genoma "+GENOMA+ " Inicial = "+muestra.getStart_Value()+ " y Final = "+muestra.getFinal_Value()+"\n");
+            muestra.setFinal_Value(valueInicial + (int) (muestra.getPorcentaje() * GENOMA) / 100);//mediante un calculo entre el genoma y el porcentaje de la zona se saca el valor del genoma
+            System.out.println("Genoma " + GENOMA + " Inicial = " + muestra.getStart_Value() + " y Final = " + muestra.getFinal_Value() + "\n");
             valueInicial = muestra.getFinal_Value() + 1;//se establece el valor inicial para la proxima zona
             ultimaMuestra = muestra;//este puntero hacia la ultima zona va a servir para agregar el ultimo genoma, ya que mediante porcentajes se ignora una cantidad
-        }if(ultimaMuestra!=null){
-             ultimaMuestra.setFinal_Value(GENOMA - 1);//agrega lo que "sobra" a la ultima zona para completar el genoma
         }
-       
+        if (ultimaMuestra != null) {
+            ultimaMuestra.setFinal_Value(GENOMA - 1);//agrega lo que "sobra" a la ultima zona para completar el genoma
+        }
+
     }
 
     public Color getColor(int pValue) {//funcion encargada de retornar un color que se encuantra en un rango del genooma de cada zona
@@ -139,7 +140,25 @@ public class Zonas implements Constantes {
     }
 
     public double fitness(int pCromosoma) {
-        return 1.0;
+        Color aComparar = getColor(pCromosoma);
+        double calificacion = 1.0;
+        boolean coincide = false;
+        Muestra resp = null;
+        for (Muestra Comparable : SummaryTarget) {
+            if (Comparable.getColor() == aComparar) {
+                resp=Comparable;
+                coincide = true;
+                break;
+            } else {
+                coincide = false;
+            }
+        }
+        if (!coincide) {
+            calificacion = 0;
+        } else {
+            calificacion=EvaluarCromosoma(pCromosoma,resp);
+        }
+        return calificacion;
     }
 
     public boolean compare(ArrayList<Muestra> pActual, ArrayList<Muestra> pTarget) {//funcion encargada de comparar y comparar si los colores coinciden y terminar la reproduccion de cromosomas
@@ -158,6 +177,16 @@ public class Zonas implements Constantes {
         population = new ArrayList<>();
         for (int cant = 0; cant > POBLACION_INICIAL; cant++) {
             population.add((int) (Math.random() * GENOMA));
+        }
+    }
+
+    private double EvaluarCromosoma(int pCromosoma, Muestra resp) {
+        double tolerancia=(resp.getPorcentaje()*(100-TARGET_TOLERANCE))/100;
+        double restaAporcentaje=(resp.getPorcentaje())/resp.getCantidad();
+        if((resp.getCantidad()-1)*restaAporcentaje<tolerancia){
+            return 0;
+        }else{
+            return 1.5;
         }
     }
 

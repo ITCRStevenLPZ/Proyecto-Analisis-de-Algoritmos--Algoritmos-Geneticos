@@ -48,7 +48,7 @@ public class Muestra {
     }
 
     public void setStart_Value(int Start_Value) {
-        this.Start_Value = Start_Value;
+        this.Start_Value = (int) Start_Value;
     }
 
     public int getFinal_Value() {
@@ -56,7 +56,7 @@ public class Muestra {
     }
 
     public void setFinal_Value(int Final_Value) {
-        this.Final_Value = Final_Value;
+        this.Final_Value = (int) Final_Value;
     }
 
     public void setPorcentage(double porcentaje) {

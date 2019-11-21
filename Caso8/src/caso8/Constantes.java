@@ -17,5 +17,5 @@ public interface Constantes {
     public final static int POLIGON_SIZE = 5;
     public final static int MAX_AMOUNT_INDIVIDUALS = (ZONE_SIZE * ZONE_SIZE) / POLIGON_SIZE;
     public final static double MUTATE_PERCENTAGE = 0.05;
-    public final static double TARGET_TOLERANCE = 0.03;//porcentaje de tolerancia de aceptacion del porcentaje de probabilidad
+    public final static double TARGET_TOLERANCE = 3;//porcentaje de tolerancia de aceptacion del porcentaje de probabilidad
 }

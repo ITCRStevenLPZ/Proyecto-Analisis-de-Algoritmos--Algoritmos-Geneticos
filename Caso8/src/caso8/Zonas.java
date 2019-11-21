@@ -83,10 +83,10 @@ public class Zonas implements Constantes {
         Muestra ultimaMuestra = null;
         for (Muestra muestra : pSummary) {
             muestra.setPorcentage((double) ((muestra.getCantidad() * 100) / this.total_colores));//saca el porcentaje de este color en la zona mediante la cantidad de estos en la zona
-            System.out.println("Porcentaje = " + muestra.getPorcentaje() + "\n");
+            //System.out.println("Porcentaje = " + muestra.getPorcentaje() + "\n");
             muestra.setStart_Value(valueInicial);//establece el limite inferior del genoma
             muestra.setFinal_Value(valueInicial + (int) (muestra.getPorcentaje() * GENOMA) / 100);//mediante un calculo entre el genoma y el porcentaje de la zona se saca el valor del genoma
-            System.out.println("Genoma " + GENOMA + " Inicial = " + muestra.getStart_Value() + " y Final = " + muestra.getFinal_Value() + "\n");
+            //System.out.println("Genoma " + GENOMA + " Inicial = " + muestra.getStart_Value() + " y Final = " + muestra.getFinal_Value() + "\n");
             valueInicial = muestra.getFinal_Value() + 1;//se establece el valor inicial para la proxima zona
             ultimaMuestra = muestra;//este puntero hacia la ultima zona va a servir para agregar el ultimo genoma, ya que mediante porcentajes se ignora una cantidad
         }
@@ -99,7 +99,7 @@ public class Zonas implements Constantes {
     public Color getColor(int pValue) {//funcion encargada de retornar un color que se encuantra en un rango del genooma de cada zona
         Color result = new Color(0, 0, 0);
         for (Muestra muestra : SummaryTarget) {
-            if (muestra.getStart_Value() >= pValue && muestra.getFinal_Value() <= pValue) {
+            if (muestra.getStart_Value() <= pValue && muestra.getFinal_Value() >= pValue) {
                 result = muestra.getColor();
                 break;
             }
@@ -107,46 +107,52 @@ public class Zonas implements Constantes {
         return result;
     }
 
-    public boolean produceGenerations(int pGenerations) {//funcion que realiza el algoritmo genetico, devuelve true si ya se logro una poblacion acertada a la target. Recibe como parametro la cantidad de generaciones
+    public boolean produceGenerations(int pGenerations) {//funcion que realiza el algoritmo genetico, devuelve true si ya se logro una poblacion acertada a la target. Recibe como parametro la cantidad de generaciones      
         ArrayList<Integer> fitCromosomas = new ArrayList<>();//arraylist encargada de contener todos los cromosomas que mediante la funcion Fitness son filtrados
         ArrayList<Integer> newPopulation = new ArrayList<>();//es la nueva poblacion de individuos, esta en constante cambio
         boolean result = false;
-        for (int cuentaGeneraciones = 0; cuentaGeneraciones < pGenerations; cuentaGeneraciones++) {//for que limita la cantidad de generaciones
+        for (int i = 0; i < pGenerations; i++) {//for que limita la cantidad de generaciones
             for (int cromosoma : population) {//por cada cromosoma de la poblacion se evalua este en la funcion fitness
                 double fitvalue = fitness(cromosoma);
                 if (fitvalue > 1.0) {//si el valor de fitness del cromosoma es mayor a 1.0 quiere decir que el cromosoma es apto para la reproduccion
+                    //System.out.println("Se encontro un Fit " + cromosoma + "\n");
                     fitCromosomas.add(cromosoma);
+                } else {
+                    //System.out.println("No se encontro un Fit\n");
+                }
+            }
+            muestrasActual = new ArrayList<>();
+            if (fitCromosomas.size() != 0) {
+                for (int cuentaHijos = 0; cuentaHijos < MAX_AMOUNT_INDIVIDUALS; cuentaHijos++) {//mediante la constante se establece la cantidad maxima de individuos a reproducir
+                    int parent1 = fitCromosomas.get((int) (Math.random() * fitCromosomas.size()));//padre 1 buscado de forma random
+                    int parent2 = fitCromosomas.get((int) (Math.random() * fitCromosomas.size()));//padre 2 buscado de forma random
+                    int hijo = Genetic.mutate(Genetic.reproducir(parent1, parent2)); //hijo generado por los padres anteriores
+                    newPopulation.add(hijo);
+                    muestrasActual.add(new Muestra(getColor(hijo)));
+                    population = newPopulation;
+                    summaryActual = new ArrayList<>();//ArrayList que sirve como comparacion para elmetodo sumarizar, encargado de reorganizar los colores y darle su cantidad y probabilidad
+                    Sumarizar(muestrasActual, summaryActual);
+                    result = compare(summaryActual, SummaryTarget);//comparara la lista summaryActual con la Target, si estas coinciden quiere decir que el algoritmo genetico termino su trabajo
+                    if (result && population.size()>=MAX_AMOUNT_INDIVIDUALS) {
+                        //System.out.println("Tamano = "+population.size()+"\n");
+                        break;
+                    }
                 }
             }
 
-            muestrasActual = new ArrayList<>();
-            for (int cuentaHijos = 0; cuentaHijos < MAX_AMOUNT_INDIVIDUALS; cuentaHijos++) {//mediante la constante se establece la cantidad maxima de individuos a reproducir
-                int parent1 = fitCromosomas.get((int) (Math.random() * fitCromosomas.size()));//padre 1 buscado de forma random
-                int parent2 = fitCromosomas.get((int) (Math.random() * fitCromosomas.size()));//padre 2 buscado de forma random
-                int hijo = Genetic.mutate(Genetic.reproducir(parent1, parent2)); //hijo generado por los padres anteriores
-                newPopulation.add(hijo);
-                muestrasActual.add(new Muestra(getColor(hijo)));
-            }
-            population = newPopulation;
-
-            summaryActual = new ArrayList<>();//ArrayList que sirve como comparacion para elmetodo sumarizar, encargado de reorganizar los colores y darle su cantidad y probabilidad
-            Sumarizar(muestrasActual, summaryActual);
-            result = compare(summaryActual, SummaryTarget);//comparara la lista summaryActual con la Target, si estas coinciden quiere decir que el algoritmo genetico termino su trabajo
-            if (result) {
-                break;
-            }
         }
         return result;
     }
 
-    public double fitness(int pCromosoma) {
-        Color aComparar = getColor(pCromosoma);
-        double calificacion = 1.0;
+    public double fitness(int pCromosoma) {//funcion encargada de dar una calificacion al cromosoma recibido
+        Color aComparar = getColor(pCromosoma);//color obtenido mediante el metodo getColor
+        double calificacion;
         boolean coincide = false;
         Muestra resp = null;
-        for (Muestra Comparable : SummaryTarget) {
-            if (Comparable.getColor() == aComparar) {
-                resp=Comparable;
+        for (Muestra Comparable : SummaryTarget) {//For each que compara el color anteriormente buscado con los colores del SummarizeTarget
+            //System.out.println(Comparable.getColor().getRGB()+" Coincide " + aComparar.getRGB() + "\n");
+            if (Comparable.getColor().getRGB() == aComparar.getRGB()) {//si el color es encontrado este genoma va a pertenecer a este rango
+                resp = Comparable;//Muestra respuesta
                 coincide = true;
                 break;
             } else {
@@ -154,39 +160,43 @@ public class Zonas implements Constantes {
             }
         }
         if (!coincide) {
-            calificacion = 0;
+            calificacion = 0;//si no pertenece a ninguna de los colores de la zona, este es descartado
         } else {
-            calificacion=EvaluarCromosoma(pCromosoma,resp);
+            calificacion = EvaluarCromosoma(pCromosoma, resp);//si efectivamente se encuentra entre los colores de SummaryTarget se evaluan los cromosomas
         }
         return calificacion;
     }
 
-    public boolean compare(ArrayList<Muestra> pActual, ArrayList<Muestra> pTarget) {//funcion encargada de comparar y comparar si los colores coinciden y terminar la reproduccion de cromosomas
-        boolean result = true;
+    private double EvaluarCromosoma(int pCromosoma, Muestra resp) {
+        double tolerancia = (resp.getPorcentaje() * (100 - TARGET_TOLERANCE)) / 100;//es la tolerancia maxima que puede aceptar
+        double restaAporcentaje = (resp.getPorcentaje()) / resp.getCantidad();//se divide el porcentaje por cada individuo del color o la muestra
+        System.out.println("Tolerancia = " + tolerancia + " Probabilidad = "+resp.getPorcentaje()+" Cantidad = "+resp.getCantidad()+" Operacion = "+(resp.getCantidad() - 1) * restaAporcentaje+"\n");
+        if ((resp.getCantidad() - 1) * restaAporcentaje >= tolerancia /*&& (resp.getCantidad() - 1) * restaAporcentaje <= resp.getPorcentaje() ||(resp.getCantidad() - 1) * restaAporcentaje > resp.getPorcentaje()*/ ) {//si el resultado de este calculo es mayor a la tolerancia y mayor o ubicado entre el al porcentaje sin tolerancia y con toleracia, quiere decir que este cromosoma a la hora de que se elimine o de que no este no va a ser necesario
+            return 0;
+        } else {//en cualquier otro caso quiere decir que si este cromosoma es eliminado, va a hacer falta y es necesario
+            return 1.5;
+        }
+    }
+
+    public boolean compare(ArrayList<Muestra> pActual, ArrayList<Muestra> pTarget) {//funcion encargada de comparar y comparar si los colores coinciden y terminar la reproduccion de cromosomas;
+        boolean resp = false;
         for (Muestra actual : pActual) {
             for (Muestra target : pTarget) {
+
                 if (actual.getColor().getRGB() == target.getColor().getRGB() && Math.abs(actual.getPorcentaje() - target.getPorcentaje()) > TARGET_TOLERANCE) {
-                    result = false;
+                    resp = false;
+                } else {
+                    resp = true;
                 }
             }
         }
-        return result;
+        return resp;
     }
 
     public void generarPoblacion() {//Funcion encargada de realizar la poblacion inicial clave para el algoritmo genetico
         population = new ArrayList<>();
-        for (int cant = 0; cant > POBLACION_INICIAL; cant++) {
+        for (int cant = 0; cant < POBLACION_INICIAL; cant++) {
             population.add((int) (Math.random() * GENOMA));
-        }
-    }
-
-    private double EvaluarCromosoma(int pCromosoma, Muestra resp) {
-        double tolerancia=(resp.getPorcentaje()*(100-TARGET_TOLERANCE))/100;
-        double restaAporcentaje=(resp.getPorcentaje())/resp.getCantidad();
-        if((resp.getCantidad()-1)*restaAporcentaje<tolerancia){
-            return 0;
-        }else{
-            return 1.5;
         }
     }
 

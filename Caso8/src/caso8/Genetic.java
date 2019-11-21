@@ -16,6 +16,7 @@ public class Genetic implements Constantes {
 
     public static int mutate(int pCromosoma) {
         if (Math.random() <= MUTATE_PERCENTAGE) {
+            //System.out.println("Mutacion\n");
             int puntoMutante = (int) (NIBBLE * Math.random());
             int mask = (int) (Math.pow(2,puntoMutante));
             pCromosoma ^= mask;

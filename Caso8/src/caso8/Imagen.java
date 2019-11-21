@@ -15,6 +15,7 @@ public class Imagen implements Constantes {
     public Imagen(File imagen_source) throws IOException {
         img = ImageIO.read(imagen_source);
         zonas = new ArrayList<>();
+        
         CrearZonas();
     }
 
@@ -24,8 +25,8 @@ public class Imagen implements Constantes {
             for (int row = 0; row < COLUMNS; row++) {
                 int x0 = ZONE_SIZE * column; //coordenada que indica la esquina superior derecha del cuadrante
                 int y0 = ZONE_SIZE * row; //coordenada que indica la esquina inferior derecha del cuadrante
-                int x1 = ZONE_SIZE * column + ZONE_SIZE-1; //coordenada que indica la esquina superior izquierda del cuadrante
-                int y1 = ZONE_SIZE * row + ZONE_SIZE-1; //coordenada que indica la esquina inferior izquierda del cuadrante
+                int x1 = ZONE_SIZE * column + ZONE_SIZE - 1; //coordenada que indica la esquina superior izquierda del cuadrante
+                int y1 = ZONE_SIZE * row + ZONE_SIZE - 1; //coordenada que indica la esquina inferior izquierda del cuadrante
                 Zonas nueva = new Zonas(x0, y0, x1, y1);
                 nueva.SetID(column, row); //la id se genera mediante la suma de la columna y la fila multiplicado por la constante COLUMNS
                 zonas.add(nueva);//se anade a la ArrayList zonas
@@ -48,10 +49,19 @@ public class Imagen implements Constantes {
                         }
                     }
 
-                }System.out.println("Cant colores = " + nueva.total_colores + " Probabilidad " +nueva.probabilidad+" ID "+nueva.iD+"\n");
-                nueva.Sumarizar();
+                }
+                //System.out.println("Cant colores = " + nueva.total_colores + " Probabilidad " + nueva.probabilidad + " ID " + nueva.iD + "\n");
+
+                if (nueva.total_colores != 0) {
+                    nueva.Sumarizar();
+                    nueva.generarPoblacion();
+                    boolean resp = nueva.produceGenerations(10);
+                    System.out.println("Se ha encontrado la respuesta? " + resp + "\n");                   
+                }
+                
+
             }
         }
     }
-    
+
 }

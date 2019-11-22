@@ -18,8 +18,9 @@ public class Coordenadas implements Constantes {
         int a;
         int b;
 
-        public Bounds() {
-
+        public Bounds(int a, int b) {
+            this.a = a;
+            this.b = b;
         }
 
         public int getA() {
@@ -40,15 +41,16 @@ public class Coordenadas implements Constantes {
     }
     int x;
     int y;
-    Bounds x1 = new Bounds();
-    Bounds x2 = new Bounds();
-    Bounds y1 = new Bounds();
-    Bounds y2 = new Bounds();
+    Bounds x1;
+    Bounds x2;
+    Bounds y1;
+    Bounds y2;
     Color color;
 
     public Coordenadas(Color color, int x, int y) {
         this.x = x;
         this.y = y;
+        this.x1 = new Bounds(x, y);
         this.color = color;
     }
 
@@ -56,19 +58,32 @@ public class Coordenadas implements Constantes {
         return x1;
     }
 
-    public void setX1(Bounds x1) {
-        this.x1 = x1;
-    }
-
     public Bounds getY1() {
         return y1;
     }
 
-    public void setY1(Bounds y1) {
-        this.y1 = y1;
+    public void setY1() {
+        this.y1 = new Bounds(x,y+POLIGON_SIZE);
     }
 
-    public void setColor(Color color) {
-        this.color = color;
+    public Bounds getX2() {
+        return x2;
     }
+
+    public void setX2() {
+        this.x2 = new Bounds(x+POLIGON_SIZE,y+POLIGON_SIZE );
+    }
+
+    public Bounds getY2() {
+        return y2;
+    }
+
+    public void setY2() {
+        this.y2 = new Bounds(x+POLIGON_SIZE,y);
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
 }

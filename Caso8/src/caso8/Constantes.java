@@ -14,8 +14,8 @@ public interface Constantes {
     public static final int NIBBLE = 16; //16 bits
     public static final int GENOMA = (int) Math.pow(2 , NIBBLE);
     public static final int POBLACION_INICIAL = 4;
-    public final static int POLIGON_SIZE = 5;
-    public final static int MAX_AMOUNT_INDIVIDUALS = ZONE_SIZE/ POLIGON_SIZE;
+    public final static int POLIGON_SIZE = 15;
+    public final static int MAX_AMOUNT_INDIVIDUALS = 50;
     public final static double MUTATE_PERCENTAGE = 0.05;
     public final static double TARGET_TOLERANCE = 3;//porcentaje de tolerancia de aceptacion del porcentaje de probabilidad
 }

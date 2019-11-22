@@ -12,11 +12,11 @@ public class Zonas implements Constantes {
     int iD;
     double probabilidad;
     int total_colores;
-    private ArrayList<Muestra> MuestrasReales;
-    private ArrayList<Muestra> SummaryTarget;
-    private ArrayList<Integer> population;
-    private ArrayList<Muestra> muestrasActual;
-    private ArrayList<Muestra> summaryActual;
+    public ArrayList<Muestra> MuestrasReales;
+    public ArrayList<Muestra> SummaryTarget;
+    public ArrayList<Integer> population;
+    public ArrayList<Muestra> muestrasActual;
+    public ArrayList<Muestra> summaryActual;
 
     public Zonas(int x0, int y0, int x1, int y1) {
         this.min_x = x0;
@@ -96,7 +96,7 @@ public class Zonas implements Constantes {
 
     }
 
-    public Color getColor(int pValue,ArrayList<Muestra> array) {//funcion encargada de retornar un color que se encuantra en un rango del genooma de cada zona
+    public Color getColor(int pValue, ArrayList<Muestra> array) {//funcion encargada de retornar un color que se encuantra en un rango del genooma de cada zona
         Color result = new Color(0, 0, 0);
         for (Muestra muestra : array) {
             if (muestra.getStart_Value() <= pValue && muestra.getFinal_Value() >= pValue) {
@@ -128,13 +128,14 @@ public class Zonas implements Constantes {
                     int parent2 = fitCromosomas.get((int) (Math.random() * fitCromosomas.size()));//padre 2 buscado de forma random
                     int hijo = Genetic.mutate(Genetic.reproducir(parent1, parent2)); //hijo generado por los padres anteriores
                     newPopulation.add(hijo);
-                    muestrasActual.add(new Muestra(getColor(hijo,SummaryTarget)));
+                    muestrasActual.add(new Muestra(getColor(hijo, SummaryTarget)));
                     population = newPopulation;
                     summaryActual = new ArrayList<>();//ArrayList que sirve como comparacion para elmetodo sumarizar, encargado de reorganizar los colores y darle su cantidad y probabilidad
                     Sumarizar(muestrasActual, summaryActual);
                     result = compare(summaryActual, SummaryTarget);//comparara la lista summaryActual con la Target, si estas coinciden quiere decir que el algoritmo genetico termino su trabajo
                     if (result && population.size() >= MAX_AMOUNT_INDIVIDUALS) {
                         //System.out.println("Tamano = "+population.size()+"\n");
+                        System.out.println("PopuSIZE " + population.size() + "\n");
                         break;
                     }
                 }
@@ -145,7 +146,7 @@ public class Zonas implements Constantes {
     }
 
     public double fitness(int pCromosoma) {//funcion encargada de dar una calificacion al cromosoma recibido
-        Color aComparar = getColor(pCromosoma,SummaryTarget);//color obtenido mediante el metodo getColor
+        Color aComparar = getColor(pCromosoma, SummaryTarget);//color obtenido mediante el metodo getColor
         double calificacion;
         boolean coincide = false;
         Muestra resp = null;
@@ -199,16 +200,7 @@ public class Zonas implements Constantes {
         for (int cant = 0; cant < POBLACION_INICIAL; cant++) {
             population.add((int) (Math.random() * GENOMA));
         }
-
-    }
-
-    public void generarCoordenadas() {
-        for (int a = 0; a < population.size(); a++) {
-            Color nuevo=getColor(population.get(a),summaryActual);
-            int x = (int) (Math.random() * (max_x - min_x) + 1) + min_x; 
-            int y = (int) (Math.random() * (max_y - min_y) + 1) + min_y;
-            Coordenadas nueva=new Coordenadas(nuevo,x,y);
-        }
+        
 
     }
 

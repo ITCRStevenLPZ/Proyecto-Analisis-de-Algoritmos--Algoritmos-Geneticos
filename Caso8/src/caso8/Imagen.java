@@ -8,18 +8,21 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 
 public class Imagen implements Constantes {
-    public ArrayList<Coordenadas> coordenadas;
+
+    public ArrayList<Coordenadas> coordenadas = new ArrayList<>();
     public ArrayList<Zonas> zonas;
     BufferedImage img = null;
+    String FileName;
 
-    public Imagen(File imagen_source) throws IOException {
+    public Imagen(File imagen_source,String FileName) throws IOException {
         img = ImageIO.read(imagen_source);
+        this.FileName=FileName;
         zonas = new ArrayList<>();
-        
+
         CrearZonas();
     }
 
-    public void CrearZonas() { //encargadas de dividir la imagen en zonas para poder trabajar de forma individual con el fin de obtener resultados mas precisos
+    public void CrearZonas() throws IOException { //encargadas de dividir la imagen en zonas para poder trabajar de forma individual con el fin de obtener resultados mas precisos
 
         for (int column = 0; column < COLUMNS; column++) {
             for (int row = 0; row < COLUMNS; row++) {
@@ -56,12 +59,28 @@ public class Imagen implements Constantes {
                     nueva.Sumarizar();
                     nueva.generarPoblacion();
                     boolean resp = nueva.produceGenerations(10);
-                    System.out.println("Se ha encontrado la respuesta? " + resp + "\n");                   
+                    System.out.println("Se ha encontrado la respuesta? " + resp + "\n");                
+                    generarCoordenadas(nueva);
+                    System.out.println("SIZE " + coordenadas.size()+ "\n");
+                    HTML Prueba = new HTML(coordenadas,FileName);
                 }
-                
 
             }
         }
+    }
+
+    public void generarCoordenadas(Zonas z) {
+        for (int a = 0; a < z.population.size(); a++) {
+            Color nuevo = z.getColor(z.population.get(a), z.SummaryTarget);
+            int x = (int) (Math.random() * (z.max_x - z.min_x) + 1) + z.min_x;
+            int y = (int) (Math.random() * (z.max_y - z.min_y) + 1) + z.min_y;
+            Coordenadas nueva = new Coordenadas(nuevo, x, y);
+            nueva.setY1();
+            nueva.setX2();
+            nueva.setY2();
+            coordenadas.add(nueva);
+        }
+
     }
 
 }

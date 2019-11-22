@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 
 public class Imagen implements Constantes {
-
+    public ArrayList<Coordenadas> coordenadas;
     public ArrayList<Zonas> zonas;
     BufferedImage img = null;
 

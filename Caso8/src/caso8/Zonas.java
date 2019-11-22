@@ -96,9 +96,9 @@ public class Zonas implements Constantes {
 
     }
 
-    public Color getColor(int pValue) {//funcion encargada de retornar un color que se encuantra en un rango del genooma de cada zona
+    public Color getColor(int pValue,ArrayList<Muestra> array) {//funcion encargada de retornar un color que se encuantra en un rango del genooma de cada zona
         Color result = new Color(0, 0, 0);
-        for (Muestra muestra : SummaryTarget) {
+        for (Muestra muestra : array) {
             if (muestra.getStart_Value() <= pValue && muestra.getFinal_Value() >= pValue) {
                 result = muestra.getColor();
                 break;
@@ -128,12 +128,12 @@ public class Zonas implements Constantes {
                     int parent2 = fitCromosomas.get((int) (Math.random() * fitCromosomas.size()));//padre 2 buscado de forma random
                     int hijo = Genetic.mutate(Genetic.reproducir(parent1, parent2)); //hijo generado por los padres anteriores
                     newPopulation.add(hijo);
-                    muestrasActual.add(new Muestra(getColor(hijo)));
+                    muestrasActual.add(new Muestra(getColor(hijo,SummaryTarget)));
                     population = newPopulation;
                     summaryActual = new ArrayList<>();//ArrayList que sirve como comparacion para elmetodo sumarizar, encargado de reorganizar los colores y darle su cantidad y probabilidad
                     Sumarizar(muestrasActual, summaryActual);
                     result = compare(summaryActual, SummaryTarget);//comparara la lista summaryActual con la Target, si estas coinciden quiere decir que el algoritmo genetico termino su trabajo
-                    if (result && population.size()>=MAX_AMOUNT_INDIVIDUALS) {
+                    if (result && population.size() >= MAX_AMOUNT_INDIVIDUALS) {
                         //System.out.println("Tamano = "+population.size()+"\n");
                         break;
                     }
@@ -145,7 +145,7 @@ public class Zonas implements Constantes {
     }
 
     public double fitness(int pCromosoma) {//funcion encargada de dar una calificacion al cromosoma recibido
-        Color aComparar = getColor(pCromosoma);//color obtenido mediante el metodo getColor
+        Color aComparar = getColor(pCromosoma,SummaryTarget);//color obtenido mediante el metodo getColor
         double calificacion;
         boolean coincide = false;
         Muestra resp = null;
@@ -170,10 +170,11 @@ public class Zonas implements Constantes {
     private double EvaluarCromosoma(int pCromosoma, Muestra resp) {
         double tolerancia = (resp.getPorcentaje() * (100 - TARGET_TOLERANCE)) / 100;//es la tolerancia maxima que puede aceptar
         double restaAporcentaje = (resp.getPorcentaje()) / resp.getCantidad();//se divide el porcentaje por cada individuo del color o la muestra
-        System.out.println("Tolerancia = " + tolerancia + " Probabilidad = "+resp.getPorcentaje()+" Cantidad = "+resp.getCantidad()+" Operacion = "+(resp.getCantidad() - 1) * restaAporcentaje+"\n");
-        if ((resp.getCantidad() - 1) * restaAporcentaje >= tolerancia /*&& (resp.getCantidad() - 1) * restaAporcentaje <= resp.getPorcentaje() ||(resp.getCantidad() - 1) * restaAporcentaje > resp.getPorcentaje()*/ ) {//si el resultado de este calculo es mayor a la tolerancia y mayor o ubicado entre el al porcentaje sin tolerancia y con toleracia, quiere decir que este cromosoma a la hora de que se elimine o de que no este no va a ser necesario
+
+        if ((resp.getCantidad() - 1) * restaAporcentaje >= tolerancia && (resp.getCantidad() - 1) * restaAporcentaje <= resp.getPorcentaje() || (resp.getCantidad() - 1) * restaAporcentaje > resp.getPorcentaje()) {//si el resultado de este calculo es mayor a la tolerancia y mayor o ubicado entre el al porcentaje sin tolerancia y con toleracia, quiere decir que este cromosoma a la hora de que se elimine o de que no este no va a ser necesario
             return 0;
         } else {//en cualquier otro caso quiere decir que si este cromosoma es eliminado, va a hacer falta y es necesario
+            //System.out.println("Tolerancia = " + tolerancia + " Probabilidad = "+resp.getPorcentaje()+" Cantidad = "+resp.getCantidad()+" Operacion = "+(resp.getCantidad() - 1) * restaAporcentaje+"\n");
             return 1.5;
         }
     }
@@ -198,6 +199,17 @@ public class Zonas implements Constantes {
         for (int cant = 0; cant < POBLACION_INICIAL; cant++) {
             population.add((int) (Math.random() * GENOMA));
         }
+
+    }
+
+    public void generarCoordenadas() {
+        for (int a = 0; a < population.size(); a++) {
+            Color nuevo=getColor(population.get(a),summaryActual);
+            int x = (int) (Math.random() * (max_x - min_x) + 1) + min_x; 
+            int y = (int) (Math.random() * (max_y - min_y) + 1) + min_y;
+            Coordenadas nueva=new Coordenadas(nuevo,x,y);
+        }
+
     }
 
 }
